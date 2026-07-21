@@ -1,16 +1,21 @@
-# Student Management API
+# Book API (FastAPI Fundamentals – Part 2)
 
-A simple REST API built with **FastAPI** to manage student records, using an in-memory data store and Pydantic models for request/response validation.
+A CRUD REST API built with **FastAPI** to manage books, using an in-memory data store and Pydantic models for request/response validation.
+
+> This project continues from Day 1's Student Management API, applying the same fundamentals (routing, path/query params, Pydantic validation) plus PUT/DELETE, HTTPException handling, and better code organization.
 
 ## Features
 
-- `GET /students` – Return all students
-- `GET /students/{id}` – Return a student by ID
-- `POST /students` – Add a new student
-- `PUT /students/{id}` – Update an existing student (partial updates supported)
-- `DELETE /students/{id}` – Delete a student
-- Input validation via Pydantic (name length, age range, etc.)
+- `GET /books` – Retrieve all books
+- `GET /books/{id}` – Retrieve a book by ID
+- `POST /books` – Add a new book
+- `PUT /books/{id}` – Update an existing book (partial updates supported)
+- `DELETE /books/{id}` – Delete a book
+- `GET /books/search` – Search books by title, author, genre, or year (query parameters)
+- Input validation via Pydantic (title/author length, valid year, non-negative price)
 - Proper HTTP status codes (200, 201, 204, 404, 422)
+- Errors handled with `HTTPException`
+- Pydantic models organized in a separate `models.py` file
 - Auto-generated interactive docs (Swagger UI + ReDoc)
 
 ## Project Structure
@@ -18,7 +23,8 @@ A simple REST API built with **FastAPI** to manage student records, using an in-
 ```
 student-management-api/
 ├── main.py            # FastAPI app and all routes
-├── requirements.txt   # Python dependencies
+├── models.py           # Pydantic models (Book, BookCreate, BookUpdate)
+├── requirements.txt    # Python dependencies
 └── README.md
 ```
 
@@ -47,35 +53,41 @@ student-management-api/
 
 ## Example Usage
 
-**Create a student**
+**Create a book**
 ```bash
-curl -X POST http://127.0.0.1:8000/students \
+curl -X POST http://127.0.0.1:8000/books \
   -H "Content-Type: application/json" \
-  -d '{"name": "Jane Doe", "age": 21, "email": "jane@example.com", "course": "Math"}'
+  -d '{"title": "The Hobbit", "author": "J.R.R. Tolkien", "year": 1937, "genre": "Fantasy", "price": 15.99}'
 ```
 
-**Get all students**
+**Get all books**
 ```bash
-curl http://127.0.0.1:8000/students
+curl http://127.0.0.1:8000/books
 ```
 
-**Get a student by ID**
+**Get a book by ID**
 ```bash
-curl http://127.0.0.1:8000/students/1
+curl http://127.0.0.1:8000/books/1
 ```
 
-**Update a student**
+**Search books**
 ```bash
-curl -X PUT http://127.0.0.1:8000/students/1 \
+curl "http://127.0.0.1:8000/books/search?author=tolkien"
+curl "http://127.0.0.1:8000/books/search?genre=fantasy&year=1937"
+```
+
+**Update a book**
+```bash
+curl -X PUT http://127.0.0.1:8000/books/1 \
   -H "Content-Type: application/json" \
-  -d '{"age": 22}'
+  -d '{"price": 9.99}'
 ```
 
-**Delete a student**
+**Delete a book**
 ```bash
-curl -X DELETE http://127.0.0.1:8000/students/1
+curl -X DELETE http://127.0.0.1:8000/books/1
 ```
 
 ## Notes
 
-- Data is stored **in memory**, so it resets every time the server restarts. This keeps the example simple — a real project would swap this for a database (e.g. SQLite/PostgreSQL with SQLAlchemy).
+- Data is stored **in memory**, so it resets every time the server restarts. This keeps the example simple — the next part of the track moves on to real databases.
